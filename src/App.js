@@ -1,21 +1,43 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import Bottom from './Bottom';
+import Menu from './Menu'
 import './App.css';
 
+import demoContest from './demoContest'
+
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            contest: demoContest,
+            llte: [] // low-level table events
+        }
+
+        this.updateContest = this.updateContest.bind(this);
+        this.updateLLTE = this.updateLLTE.bind(this);
+    }
+
+    updateContest(contest) {
+        this.setState({ contest });
+    }
+
+    updateLLTE(llte) {
+        this.setState({ llte });
+    }
+
+    render() {
+        return (
+            <div className="App">
+                <Menu 
+                    contest={this.state.contest}
+                    updateContest={this.updateContest}
+                    llte={this.state.llte}
+                    updateLLTE={this.updateLLTE}
+                />
+                <Bottom />
+            </div>
+        );
+    }
 }
 
 export default App;

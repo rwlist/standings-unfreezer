@@ -1,0 +1,18 @@
+.Bottom {
+    color: white;
+    background: #111111;
+    height: 100px;
+    font-size: 1.2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Bottom-logo {
+    width: 60px;
+}
+
+.Bottom-link {
+    color: white;
+    padding-left: 8px;
+}
