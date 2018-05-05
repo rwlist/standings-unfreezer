@@ -8,7 +8,13 @@
 }
 
 .TableRow-selected {
-    background-color: #9063aa;
+    animation: selected infinite 3s linear;
+}
+
+@keyframes selected {
+    0% {background-color: #c9acdb;}
+    50% {background-color: #acb7db}
+    100% {background-color: #c9acdb;}
 }
 
 .TableRow-name {
