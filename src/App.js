@@ -10,7 +10,8 @@ class App extends Component {
         super(props);
         this.state = {
             contest: demoContest,
-            llte: [] // low-level table events
+            llte: [], // low-level table events
+            page: 'menu'
         }
 
         this.updateContest = this.updateContest.bind(this);
@@ -28,12 +29,12 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                <Menu 
+                {this.state.page === 'menu' || <Menu 
                     contest={this.state.contest}
                     updateContest={this.updateContest}
                     llte={this.state.llte}
                     updateLLTE={this.updateLLTE}
-                />
+                />}
                 <Bottom />
             </div>
         );

@@ -9,7 +9,9 @@ class Menu extends Component {
         this.state = {
             log: '',
             opts: {
-
+                removeDecrSubmits: true,
+                hideUsers: true,
+                freezeTime: 0
             }
         };
 
@@ -58,7 +60,7 @@ class Menu extends Component {
                 id: xmlUser.getAttribute('id'),
                 loginName: xmlUser.getAttribute('loginName'),
                 displayedName: xmlUser.getAttribute('displayedName'),
-                hidden: xmlUser.getAttribute('participationType') == 'HIDDEN'
+                hidden: xmlUser.getAttribute('participationType') === 'HIDDEN'
             };
             contest.users.push(user);
         }
@@ -94,7 +96,7 @@ class Menu extends Component {
     }
 
     generateLLTE() {
-
+        this.props.updateLLTE(LLTE.generate(this.props.contest, this.state.opts));
     }
 
     render() {
@@ -114,6 +116,26 @@ class Menu extends Component {
                         name="removeDecrSubmits"
                         type="checkbox"
                         checked={this.state.opts.removeDecrSubmits}
+                        onChange={this.handleInputChange}
+                    />
+                </label>
+                <br/>
+                <label>
+                    Hide hidden users:
+                    <input 
+                        name="hideUsers"
+                        type="checkbox"
+                        checked={this.state.opts.hideUsers}
+                        onChange={this.handleInputChange}
+                    />
+                </label>
+                <br/>
+                <label>
+                    Freeze time:
+                    <input 
+                        name="freezeTime"
+                        type="number"
+                        checked={this.state.opts.freezeTime}
                         onChange={this.handleInputChange}
                     />
                 </label>
