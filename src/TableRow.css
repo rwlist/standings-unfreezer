@@ -7,8 +7,13 @@
     border-radius: 7px;
 }
 
+.TableRow-selected {
+    background-color: #9063aa;
+}
+
 .TableRow-name {
-    min-width: 200px;
+    min-width: 400px;
+    max-width: 400px;
     flex-grow: 1;
 }
 

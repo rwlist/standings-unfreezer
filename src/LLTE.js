@@ -1,4 +1,4 @@
-import cloneDeep from 'clone-deep';
+import cloneDeep from 'clone';
 
 class LLTE {
     static generateEmptyCells(problems) {
@@ -111,7 +111,7 @@ class LLTE {
             return it.contestTime < freezeTime;
         });
 
-        const frozenSubmits = submits.filter(it => {
+        let frozenSubmits = submits.filter(it => {
             return it.contestTime >= freezeTime;
         });
 
@@ -163,6 +163,63 @@ class LLTE {
             list: list
         });
 
+        {
+            let rowNumber = table.rows.length;
+            let selectedRow = null;
+            while (rowNumber > 0) {
+                table.rows.sort(LLTE.defaultComparator);
+                const row = table.rows[rowNumber - 1];
+                if (!selectedRow || selectedRow.id !== row.id) {
+                    const event = {
+                        event: 'multiple',
+                        list: []
+                    };
+                    if (selectedRow) {
+                        event.list.push({
+                            event: 'rowUpdate',
+                            rowId: selectedRow.id,
+                            update: {
+                                isSelected: false
+                            }
+                        });
+                    }
+                    event.list.push({
+                        event: 'rowUpdate',
+                        rowId: row.id,
+                        update: {
+                            isSelected: true
+                        }
+                    });
+                    LLTE.applyEvent(table, event);
+                    llte.push(event);
+                    selectedRow = row;
+                }
+                const submits = frozenSubmits.filter(it => it.userId === row.id);
+                if (submits.length === 0) {
+                    --rowNumber;
+                    continue;
+                }
+                const submission = submits[0];
+                frozenSubmits = frozenSubmits.filter(it => {
+                    return it.id !== submission.id;
+                });
+                const cell = LLTE.findCell(row, submission.problemTitle);
+                llte.push({
+                    event: 'cellUpdate',
+                    rowId: row.id,
+                    cellTitle: cell.title,
+                    update: {
+                        status: 'selected'
+                    }
+                });
+                const update = LLTE.fullApplySubmission(table, submission);
+                llte.push({
+                    event: 'multiple',
+                    list: update.events
+                });
+            }
+        }
+
         frozenSubmits.forEach(it => {
             const row = LLTE.findRow(table, it.userId);
             const cell = LLTE.findCell(row, it.problemTitle);
@@ -186,12 +243,9 @@ class LLTE {
 
     static defaultComparator(row1, row2) {
         if (row1.score !== row2.score) {
-            return -row1.score + row2.score;
+            return -(row1.score - row2.score);
         }
-        if (row1.lastSubmission !== row2.lastSubmission) {
-            return -row1.lastSubmission + row2.lastSubmission;
-        }
-        return -row1.id + row2.id;
+        return row1.id - row2.id;
     }
 
     static placeComparator(row1, row2) {

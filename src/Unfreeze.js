@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Table from './Table';
 import LLTE from './LLTE';
-import cloneDeep from 'clone-deep';
+import cloneDeep from 'clone';
 
 const ANIMATION_LENGTH = 1000;
 
@@ -71,7 +71,7 @@ class Unfreeze extends Component {
                     pending,
                     table,
                     composited: this.calcTransition(prevState.table, table),
-                    lastUpdate: Date.now(),
+                    lastUpdate: Date.now() + 100,
                     time: Date.now()
                 }
             }
@@ -92,7 +92,7 @@ class Unfreeze extends Component {
     }
 
     render() {
-        const passed = this.state.time - this.state.lastUpdate;
+        const passed = Math.max(0, this.state.time - this.state.lastUpdate);
         let table;
         if (this.state.composited && passed < ANIMATION_LENGTH) {
             table = cloneDeep(this.state.composited);
