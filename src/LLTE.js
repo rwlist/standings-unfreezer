@@ -85,6 +85,18 @@ class LLTE {
                 user.maxScore[it.problemTitle] = it.score;
             }
             return true;
+        }).filter(it => {
+            if (it.contestTime < freezeTime) {
+                return true;
+            }
+            const user = LLTE.findUser(_users, it.userId);
+            if (removeDecrSubmits2) {
+                if (user.maxScore2[it.problemTitle] >= it.score) {
+                    return false;
+                }
+                user.maxScore2[it.problemTitle] = it.score;
+            }
+            return true;
         }).map(it => {
             const user = LLTE.findUser(_users, it.userId);
             it.isLast = true;
@@ -101,16 +113,7 @@ class LLTE {
 
         const frozenSubmits = submits.filter(it => {
             return it.contestTime >= freezeTime;
-        }).filter(it => {
-            const user = LLTE.findUser(_users, it.userId);
-            if (removeDecrSubmits2) {
-                if (user.maxScore2[it.problemTitle] >= it.score) {
-                    return false;
-                }
-                user.maxScore2[it.problemTitle] = it.score;
-            }
-            return true;
-        })
+        });
 
         let table = LLTE.generateEmptyTable(users, problems);
         table.name = contest.name;
