@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Bottom from './Bottom';
 import Menu from './Menu'
+import Unfreeze from './Unfreeze'
 import './App.css';
 
 import demoContest from './demoContest'
@@ -29,11 +30,16 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                {this.state.page === 'menu' || <Menu 
+                {this.state.page === 'menu' && <Menu 
                     contest={this.state.contest}
                     updateContest={this.updateContest}
                     llte={this.state.llte}
                     updateLLTE={this.updateLLTE}
+                    startUnfreeze={() => this.setState({ page: 'unfreeze' })}
+                />}
+                {this.state.page === 'unfreeze' && <Unfreeze
+                    llte={this.state.llte}
+                    stopUnfreeze={() => this.setState({ page: 'menu' })}
                 />}
                 <Bottom />
             </div>

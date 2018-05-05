@@ -32,6 +32,7 @@ class LLTE {
         table.rows = users.map(it => LLTE.generateEmptyRow(it, table.problems));
         table.rowOffset = 0;
         table.rowSize = 25;
+        table.rowMargin = 2;
         return table;
     }
 
@@ -89,8 +90,6 @@ class LLTE {
             return it;
         });
 
-        console.log(submits);
-
         const visibleSubmits = submits.filter(it => {
             return it.contestTime < freezeTime;
         });
@@ -100,6 +99,7 @@ class LLTE {
         });
 
         let table = LLTE.generateEmptyTable(users, problems);
+        table.name = contest.name;
 
         const list = [
             {
@@ -108,10 +108,18 @@ class LLTE {
             }
         ];
 
+        {
+            const fix = LLTE.fixTable(table);
+            fix.events.forEach(it => {
+                LLTE.applyEvent(table, it);
+                list.push(it);
+            });
+        }
+
         visibleSubmits.forEach(it => {
             const update = LLTE.fullApplySubmission(table, it);
             list.push(...update.events);
-        })
+        });
 
         llte.push({
             event: 'multiple',
@@ -131,12 +139,16 @@ class LLTE {
 
     static defaultComparator(row1, row2) {
         if (row1.score !== row2.score) {
-            return row1.score - row2.score;
+            return -row1.score + row2.score;
         }
         if (row1.lastSubmission !== row2.lastSubmission) {
-            return row1.lastSubmission - row2.lastSubmission;
+            return -row1.lastSubmission + row2.lastSubmission;
         }
-        return row1.id - row2.id;
+        return -row1.id + row2.id;
+    }
+
+    static placeComparator(row1, row2) {
+        return -row1.actualPlace + row2.actualPlace;
     }
 
     static findRow(table, id) {
@@ -190,12 +202,15 @@ class LLTE {
         let table = cloneDeep(_table);
         table.rows.sort(LLTE.defaultComparator);
         const events = [];
-        table.rows.forEach(it => {
+        table.rows.forEach((it, index) => {
             const _row = LLTE.findRow(_table, it.id);
+            it.actualPlace = index;
+            it.displayedPlace = it.actualPlace + 1; // TODO
             if (_row.actualPlace !== it.actualPlace ||
                 _row.displayedPlace !== it.displayedPlace) {
                 events.push({
                     event: 'rowUpdate',
+                    rowId: it.id,
                     update: {
                         actualPlace: it.actualPlace,
                         displayedPlace: it.displayedPlace

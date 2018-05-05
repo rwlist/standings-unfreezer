@@ -1,0 +1,12 @@
+.TableRow {
+    display: flex;
+    position: absolute;
+}
+
+.TableRow-name {
+    width: 200px;
+}
+
+.TableRow-cell {
+    width: 30px;
+}

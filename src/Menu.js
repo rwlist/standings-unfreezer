@@ -11,6 +11,7 @@ class Menu extends Component {
             opts: {
                 removeDecrSubmits: true,
                 hideUsers: true,
+                hideInactive: true,
                 freezeTime: 0
             }
         };
@@ -131,6 +132,16 @@ class Menu extends Component {
                 </label>
                 <br/>
                 <label>
+                    Hide inactive:
+                    <input 
+                        name="hideInactive"
+                        type="checkbox"
+                        checked={this.state.opts.hideInactive}
+                        onChange={this.handleInputChange}
+                    />
+                </label>
+                <br/>
+                <label>
                     Freeze time:
                     <input 
                         name="freezeTime"
@@ -141,6 +152,7 @@ class Menu extends Component {
                 </label>
                 <br/>
                 <button className="nice-button" onClick={this.generateLLTE}>Generate LLTE</button>
+                <button className="nice-button" onClick={this.props.startUnfreeze}>Start</button>
 
                 <h4>LLTE:</h4>
                 <pre className="Menu-contest-code">
