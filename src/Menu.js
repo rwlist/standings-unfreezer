@@ -8,12 +8,13 @@ class Menu extends Component {
         super(props);
         this.state = {
             log: '',
-            opts: {
-                removeDecrSubmits: true,
-                hideUsers: true,
-                hideInactive: true,
-                freezeTime: 0
-            }
+            removeDecrSubmits: true,
+            removeDecrSubmits2: true,
+            hideUsers: true,
+            hideInactive: true,
+            freezeTime: 4358619,
+            rowSize: 40,
+            rowMargin: 4
         };
 
         this.onLogChange = this.onLogChange.bind(this);
@@ -86,18 +87,21 @@ class Menu extends Component {
 
     handleInputChange(event) {
         const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const value = target.type === 'checkbox' 
+                    ? target.checked 
+                    : (target.type === 'number' 
+                            ? parseInt(target.value, 10)
+                            : target.value
+                    );
         const name = target.name;
 
         this.setState({
-            opts: {
-                [name]: value
-            }
+            [name]: value
         });
     }
 
     generateLLTE() {
-        this.props.updateLLTE(LLTE.generate(this.props.contest, this.state.opts));
+        this.props.updateLLTE(LLTE.generate(this.props.contest, this.state));
     }
 
     render() {
@@ -112,11 +116,21 @@ class Menu extends Component {
 
                 <h4>Generate LLTE</h4>
                 <label>
-                    Remove decreasing points submits: (show best submit)
+                    Remove decreasing score submits:
                     <input 
                         name="removeDecrSubmits"
                         type="checkbox"
-                        checked={this.state.opts.removeDecrSubmits}
+                        checked={this.state.removeDecrSubmits}
+                        onChange={this.handleInputChange}
+                    />
+                </label>
+                <br/>
+                <label>
+                    Show only positive progress:
+                    <input 
+                        name="removeDecrSubmits2"
+                        type="checkbox"
+                        checked={this.state.removeDecrSubmits2}
                         onChange={this.handleInputChange}
                     />
                 </label>
@@ -126,7 +140,7 @@ class Menu extends Component {
                     <input 
                         name="hideUsers"
                         type="checkbox"
-                        checked={this.state.opts.hideUsers}
+                        checked={this.state.hideUsers}
                         onChange={this.handleInputChange}
                     />
                 </label>
@@ -136,7 +150,7 @@ class Menu extends Component {
                     <input 
                         name="hideInactive"
                         type="checkbox"
-                        checked={this.state.opts.hideInactive}
+                        checked={this.state.hideInactive}
                         onChange={this.handleInputChange}
                     />
                 </label>
@@ -146,7 +160,27 @@ class Menu extends Component {
                     <input 
                         name="freezeTime"
                         type="number"
-                        checked={this.state.opts.freezeTime}
+                        value={this.state.freezeTime}
+                        onChange={this.handleInputChange}
+                    />
+                </label>
+                <br/>
+                <label>
+                    Row size:
+                    <input 
+                        name="rowSize"
+                        type="number"
+                        value={this.state.rowSize}
+                        onChange={this.handleInputChange}
+                    />
+                </label>
+                <br/>
+                <label>
+                    Row margin:
+                    <input 
+                        name="rowMargin"
+                        type="number"
+                        value={this.state.rowMargin}
                         onChange={this.handleInputChange}
                     />
                 </label>

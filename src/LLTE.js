@@ -31,8 +31,6 @@ class LLTE {
         table.problems = problems;
         table.rows = users.map(it => LLTE.generateEmptyRow(it, table.problems));
         table.rowOffset = 0;
-        table.rowSize = 25;
-        table.rowMargin = 2;
         return table;
     }
 
@@ -44,21 +42,28 @@ class LLTE {
         const llte = [];
         const {
             removeDecrSubmits,
+            removeDecrSubmits2,
             hideUsers,
-            freezeTime
+            freezeTime,
+            hideInactive,
+            rowSize,
+            rowMargin
         } = opts;
 
         const users = Array.from(contest.users).filter(it => {
-            if (hideUsers) {
-                return !it.hidden;
-            } else {
-                return true;
+            if (hideUsers && it.hidden) {
+                return false;
             }
+            if (hideInactive && !contest.submits.find(sub => sub.userId === it.id)) {
+                return false;
+            }
+            return true;
         });
 
         const _users = users.map(_it => {
             const it = cloneDeep(_it);
             it.maxScore = {};
+            it.maxScore2 = {};
             it.lastSubmits = {};
             return it;
         });
@@ -96,10 +101,21 @@ class LLTE {
 
         const frozenSubmits = submits.filter(it => {
             return it.contestTime >= freezeTime;
-        });
+        }).filter(it => {
+            const user = LLTE.findUser(_users, it.userId);
+            if (removeDecrSubmits2) {
+                if (user.maxScore2[it.problemTitle] >= it.score) {
+                    return false;
+                }
+                user.maxScore2[it.problemTitle] = it.score;
+            }
+            return true;
+        })
 
         let table = LLTE.generateEmptyTable(users, problems);
         table.name = contest.name;
+        table.rowSize = rowSize;
+        table.rowMargin = rowMargin;
 
         const list = [
             {
@@ -107,6 +123,24 @@ class LLTE {
                 table: cloneDeep(table)
             }
         ];
+
+        submits.forEach(it => {
+            const row = LLTE.findRow(table, it.userId);
+            const cell = LLTE.findCell(row, it.problemTitle);
+            if (cell.status === 'nothing') {
+                const event = {
+                    event: 'cellUpdate',
+                    rowId: row.id,
+                    cellTitle: cell.title,
+                    update: {
+                        status: 'pending',
+                        display: '?'
+                    }
+                };
+                LLTE.applyEvent(table, event);
+                list.push(event);
+            }
+        });
 
         {
             const fix = LLTE.fixTable(table);
@@ -127,6 +161,16 @@ class LLTE {
         });
 
         frozenSubmits.forEach(it => {
+            const row = LLTE.findRow(table, it.userId);
+            const cell = LLTE.findCell(row, it.problemTitle);
+            llte.push({
+                event: 'cellUpdate',
+                rowId: row.id,
+                cellTitle: cell.title,
+                update: {
+                    status: 'selected'
+                }
+            });
             const update = LLTE.fullApplySubmission(table, it);
             llte.push({
                 event: 'multiple',

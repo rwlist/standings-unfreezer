@@ -1,12 +1,32 @@
 .TableRow {
     display: flex;
     position: absolute;
+    background-color: #d4e9f0;
+    align-items: center;
+    width: 100%;
+    border-radius: 7px;
 }
 
 .TableRow-name {
-    width: 200px;
+    min-width: 200px;
+    flex-grow: 1;
 }
 
 .TableRow-cell {
     width: 30px;
+    font-weight: bold;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.TableRow-cell-final {
+    color: green;
+}
+
+.TableRow-cell-pending {
+    color: blue;
+}
+
+.TableRow-cell-selected {
+    color: yellow;
 }
